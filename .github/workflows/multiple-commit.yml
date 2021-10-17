@@ -1,0 +1,25 @@
+name: Multi branch commit
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    strategy:
+      matrix:
+        branch: [ "dev-antares", "dev-sirius", "dev-vega" ]
+    runs-on: ubuntu-latest
+    name: Add new changes in selected branches
+    steps:
+      - name: Get branch
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.APP_GITHUB_TOKEN }}
+          ref: ${{ matrix.branch }}
+          fetch-depth: 0
+      - name: Merge and push
+        uses: pr-mpt/actions-merge-branch@v1
+        with:
+          from: "origin/main"
