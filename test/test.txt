@@ -1,1 +1,2 @@
 replace=base-replaceable
+base-replaceable-test_test-base-replaceable
