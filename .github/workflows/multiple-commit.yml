@@ -1,25 +1,44 @@
-name: Multi branch commit
+name: Change devs settings
 
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
-  deploy:
+  alteration:
     strategy:
       matrix:
-        branch: [ "dev-antares", "dev-sirius", "dev-vega" ]
+        dev: [ "dev-antares", "dev-sirius", "dev-vega" ]
     runs-on: ubuntu-latest
-    name: Add new changes in selected branches
+    name: Change dev settings
     steps:
-      - name: Get branch
+      - name: Checks-out repository
         uses: actions/checkout@v2
         with:
           token: ${{ secrets.APP_GITHUB_TOKEN }}
-          ref: ${{ matrix.branch }}
+          ref: ${{ matrix.dev }}
           fetch-depth: 0
-      - name: Merge and push
-        uses: pr-mpt/actions-merge-branch@v1
+      - name: Cherry pick input commits
+        shell: bash
+        run: |
+          if ! git cherry-pick ${{ github.event.before }}..${{ github.event.after }} -n -X theirs
+          then
+              echo "Auto cherry-pick failed."
+              git status
+          fi
+      - name: Find and replace base branch
+        uses: mingjun97/file-regex-replace@v1
         with:
-          from: "origin/main"
+          regex: '(base-replaceable)'
+          replacement: '${{ matrix.devs }}'
+          flags: "gm"
+          exclude: ".github/workflows/multiple-commit.yml"
+      - name: Commit and push dev changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: ${{ matrix.dev }}
+          commit_message: Alteration
+          commit_user_name: prybudko
+          commit_user_email: romanprybudko@gmail.com
+          commit_options: "--no-verify --signoff"
