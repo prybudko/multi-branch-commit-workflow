@@ -1,1 +1,2 @@
-replace=
+replace=dev-sirius
+dev-sirius-test_test-dev-sirius
