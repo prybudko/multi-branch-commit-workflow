@@ -19,8 +19,17 @@ jobs:
           token: ${{ secrets.APP_GITHUB_TOKEN }}
           ref: ${{ matrix.branch }}
           fetch-depth: 0
-      - name: Merge and push
-        uses: pr-mpt/actions-merge-branch@v1
+      - name: Cherry pick input commits
+        shell: bash
+        run: |
+          if ! git cherry-pick ${{ github.event.before }}..${{ github.event.after }} -n -X theirs
+          then
+              echo "Auto cherry-pick failed."
+              git status
+              exit 1
+          fi
+      - name: Find and replace base branch
+        uses: mingjun97/file-regex-replace@v1
         with:
           regex: '(base-replaceable)'
           replacement: '${{ matrix.dev }}'
