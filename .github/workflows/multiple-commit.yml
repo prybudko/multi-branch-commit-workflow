@@ -22,4 +22,15 @@ jobs:
       - name: Merge and push
         uses: pr-mpt/actions-merge-branch@v1
         with:
-          from: "origin/main"
+          regex: '(base-replaceable)'
+          replacement: '${{ matrix.dev }}'
+          flags: "gm"
+          exclude: ".github/workflows/multiple-commit.yml"
+      - name: Commit and push dev changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: ${{ matrix.dev }}
+          commit_message: Alteration
+          commit_user_name: prybudko
+          commit_user_email: romanprybudko@gmail.com
+          commit_options: "--no-verify --signoff"

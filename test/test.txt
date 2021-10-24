@@ -1,1 +1,2 @@
-replace=
+replace=dev-antares
+dev-antares-test_test-dev-antares
