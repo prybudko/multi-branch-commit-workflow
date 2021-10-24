@@ -1,1 +1,2 @@
-replace=
+replace=dev-vega
+dev-vega-test_test-dev-vega
